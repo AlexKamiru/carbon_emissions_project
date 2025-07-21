@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np 
 import statsmodels.api as sm
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
@@ -13,6 +14,9 @@ def load_processed_data():
     df= pd.read_csv("data/processed/combined_data.csv")
     return df
 
+#===============
+ #Regression
+#===============
 
 #Q1 – Do Rich Countries Have High CO₂ Emissions?
 
@@ -117,3 +121,89 @@ def run_q1_multiple_regression(df):
         
     return model, x_test, y_test, y_pred
    
+
+
+
+#Q2: IS ECONOMIC GROWTH TIED TO POLLUTION?
+  
+def check_gdp_distribution(df):
+    gdp_data = df["gdp"].dropna()
+
+    print("\n=== GDP Distribution Check ===")
+    print(gdp_data.describe())
+    skewness = gdp_data.skew()
+    print(f"Skewness: {skewness:.2f}")
+
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(6,4))
+    plt.hist(gdp_data, bins=50, color='skyblue', edgecolor='black')
+    plt.title("GDP Distribution")
+    plt.xlabel("GDP")
+    plt.ylabel("Frequency")
+    plt.savefig("outputs/plots/gdp_distribution.png")
+    plt.close()
+    print("Saved histogram → outputs/plots/gdp_distribution.png")
+
+    return skewness
+
+#Function for the regression using log transformation.
+def run_q2_polynomial_regression(df):
+    """
+    Q2: Polynomial Regression (log(GDP) → CO₂ Emissions)
+    Checks if economic growth (GDP) has a nonlinear relationship with CO₂ emissions.
+    """
+
+    # 1. Data Preparation 
+    data = df.dropna(subset=["gdp", "co2"])
+    data=data.copy()
+    data.loc[:,"log_gdp"] = np.log1p(data["gdp"])  # log(1+gdp)
+
+    X = data[["log_gdp"]]
+    y = data["co2"]
+
+    # 2. Polynomial Transformation (degree=2) 
+    poly = PolynomialFeatures(degree=2, include_bias=False)
+    X_poly = poly.fit_transform(X)  # Creates [log_gdp, log_gdp^2]
+
+    # 3. Train-Test Split 
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_poly, y, test_size=0.2, random_state=42, shuffle=True
+    )
+
+    # 4. Fit the Model 
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # 5. Predictions & Evaluation
+    y_pred = model.predict(X_test)
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print("\nQ2: POLYNOMIAL REGRESSION (log(GDP) → CO₂)")
+    print(f"R² Score: {r2:.3f}")
+    print(f"RMSE: {rmse:.3f}")
+    print(f"Intercept: {model.intercept_:.3f}")
+    for feature, coef in zip(["log_gdp", "log_gdp^2"], model.coef_):
+        print(f"{feature} Coefficient: {coef:.6f}")
+
+    # 6. Statsmodels Summary 
+    X_sm = sm.add_constant(X_poly)
+    ols_model = sm.OLS(y, X_sm).fit()
+    print("\n--- Statsmodels Summary ---\n", ols_model.summary())
+
+    # 7. Save Results 
+    os.makedirs("outputs/tables", exist_ok=True)
+
+    # Save metrics & coefficients
+    summary = pd.DataFrame({
+        "Metric": ["R2", "RMSE", "Intercept", "log_gdp_Coefficient", "log_gdp^2_Coefficient"],
+        "Value": [r2, rmse, model.intercept_, model.coef_[0], model.coef_[1]]
+    })
+    summary.to_csv("outputs/tables/regression_summary_q2_polynomial.csv", index=False)
+
+    # Save statsmodels summary (TXT)
+    with open("outputs/tables/regression_summary_q2_polynomial_statsmodels.txt", "w") as f:
+        f.write(ols_model.summary().as_text())
+
+    return model, X_test, y_test, y_pred
