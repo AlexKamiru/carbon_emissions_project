@@ -44,7 +44,7 @@ def run_q1_simple_regression(df):
     print(f"R^2 Score:{r2:.3f}")
     print(f"RMSE: {rmse:.3f}")
     print(f"Intercept:{model.intercept_:.3f}")
-    print(f"Coefficient/slope(GDP):{model.coef_[0]:.3f}")
+    print(f"Coefficient/slope(GDP):{model.coef_[0]:.6f}")
 
             #statsmodels for detailed interpretation(p-values,CI)
     X_sm= sm.add_constant(x) #adding an intercept term
@@ -58,6 +58,12 @@ def run_q1_simple_regression(df):
                 "Value":[r2,rmse,model.intercept_,model.coef_[0]]
             })
     summary.to_csv("outputs/tables/regression_summary_q1_simple.csv", index=False)
+    
+    # Statsmodels full text & coefficients table
+    with open("outputs/tables/regression_summary_q1_simple_statsmodels.txt", "w") as f:
+        f.write(sm_model.summary().as_text())
+    
+
 
     return model, x_test,y_test,y_pred
 
@@ -95,6 +101,19 @@ def run_q1_multiple_regression(df):
     X_sm = sm.add_constant(x)
     ols_model = sm.OLS(y, X_sm).fit()
     print("\n--- Statsmodels Summary\n",ols_model.summary())
-       
+
+    #===save results to csv===
+    os.makedirs("outputs/tables",exist_ok=True)
+
+    summary= pd.DataFrame({
+        "Metric": ["R2", "RMSE", "Intercept"] + [f"{feature}_Coefficient" for feature in x.columns],
+        "Value": [r2, rmse, model.intercept_] + list(model.coef_)
+    })
+    summary.to_csv("outputs/tables/regression_summary_q1_multiple.csv", index=False)   
+
+    #===save statsmodels summary
+    with open("outputs/tables/regression_summary_q1_multiple_statsmodels.txt","w") as f:
+        f.write(ols_model.summary().as_text())
+        
     return model, x_test, y_test, y_pred
    

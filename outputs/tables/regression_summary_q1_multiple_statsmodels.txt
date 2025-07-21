@@ -1,0 +1,29 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    co2   R-squared:                       0.986
+Model:                            OLS   Adj. R-squared:                  0.986
+Method:                 Least Squares   F-statistic:                 3.990e+05
+Date:                Mon, 21 Jul 2025   Prob (F-statistic):               0.00
+Time:                        20:47:19   Log-Likelihood:            -1.3022e+05
+No. Observations:               17083   AIC:                         2.604e+05
+Df Residuals:                   17079   BIC:                         2.605e+05
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       -390.6290      6.723    -58.105      0.000    -403.806    -377.452
+gdp         3.939e-10   2.22e-12    177.574      0.000     3.9e-10    3.98e-10
+population  1.404e-06   3.47e-08     40.503      0.000    1.34e-06    1.47e-06
+pm2_5          2.7055      0.298      9.094      0.000       2.122       3.289
+==============================================================================
+Omnibus:                     5791.459   Durbin-Watson:                   0.013
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            91667.474
+Skew:                          -1.202   Prob(JB):                         0.00
+Kurtosis:                      14.091   Cond. No.                     1.84e+13
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.84e+13. This might indicate that there are
+strong multicollinearity or other numerical problems.
