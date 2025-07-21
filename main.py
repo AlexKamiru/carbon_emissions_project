@@ -7,6 +7,8 @@ from scripts.load_data import (
     load_air_pollution_data,
     load_temperature_data,
     load_income_group_data)
+#data loading for regression
+from scripts.regression_models import load_processed_data
 
 #data cleaning
 from scripts.clean_data import (
@@ -34,6 +36,9 @@ from scripts.visualize import (
     plot_poor_countries_industrialization,
     plot_pm25_by_income)
 
+#Regression
+from scripts.regression_models import (run_q1_simple_regression, run_q1_multiple_regression)
+
 
 def main():
     # 1. Load raw data
@@ -59,6 +64,7 @@ def main():
     print(f"Combined dataset shape: {combined_df.shape}")
     print(f"Columns: {list(combined_df.columns)}")
     print(combined_df.head())
+    
 
     #---------------------------------
           #ANALYSIS AND VISUALIZATION
@@ -95,12 +101,25 @@ def main():
         #visualization
     plot_pm25_by_income(combined_df)
 
-
     # all analyses complete! Visualisations saved to outputs/plots
+
+    
+
+    #------------------------
+      #REGRESSION PART
+    #------------------------
+
+    #Q1: DO RICH COUNTRIES HAVE HIGH co2 EMISSIONS
+    df = load_processed_data() #Load the processed dataset
+    model, x_test, y_test, y_pred = run_q1_simple_regression(df)
+    model, x_test, y_test, y_pred = run_q1_multiple_regression(df)
 
 # ensure output directories exist
 os.makedirs("outputs/plots", mode=0o777, exist_ok=True)
 os.makedirs("outputs/tables",mode=0o777,exist_ok=True)
+
+
+
 
 if __name__ == "__main__":
     main()
