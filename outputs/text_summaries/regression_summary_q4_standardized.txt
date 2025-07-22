@@ -12,18 +12,16 @@ Covariance Type:            nonrobust
 ==============================================================================
                  coef    std err          t      P>|t|      [0.025      0.975]
 ------------------------------------------------------------------------------
-const       -390.6290      6.723    -58.105      0.000    -403.806    -377.452
-gdp         3.939e-10   2.22e-12    177.574      0.000     3.9e-10    3.98e-10
-population  1.404e-06   3.47e-08     40.503      0.000    1.34e-06    1.47e-06
-pm2_5          2.7055      0.298      9.094      0.000       2.122       3.289
+const       2596.6681      3.785    686.068      0.000    2589.249    2604.087
+x1          3305.1811     18.613    177.574      0.000    3268.698    3341.664
+x2           819.6074     20.236     40.503      0.000     779.943     859.272
+x3            50.7291      5.578      9.094      0.000      39.795      61.663
 ==============================================================================
 Omnibus:                     5791.459   Durbin-Watson:                   0.013
 Prob(Omnibus):                  0.000   Jarque-Bera (JB):            91667.474
 Skew:                          -1.202   Prob(JB):                         0.00
-Kurtosis:                      14.091   Cond. No.                     1.84e+13
+Kurtosis:                      14.091   Cond. No.                         11.5
 ==============================================================================
 
 Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[2] The condition number is large, 1.84e+13. This might indicate that there are
-strong multicollinearity or other numerical problems.

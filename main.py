@@ -42,7 +42,8 @@ from scripts.regression_models import (
     run_q1_multiple_regression,
     check_gdp_distribution,
     run_q2_polynomial_regression,
-    run_q3_income_group_regression)
+    run_q3_income_group_regression,
+    run_q4_feature_importance_regression)
 
 
 def main():
@@ -136,6 +137,8 @@ def main():
     #Q3: ARE POOR COUNTRIES PUNISHED FOR INDUSTRIALIZING?
     model, X_test, y_test, y_pred = run_q3_income_group_regression(df)
 
+    #Q4: Multiple Linear Regression with standardized coefficients
+    model, x_test, y_test, y_pred = run_q4_feature_importance_regression(df)
 
 
             

@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np 
 import statsmodels.api as sm
+from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -273,4 +274,61 @@ def run_q3_income_group_regression(df):
         f.write(ols_model.summary().as_text())
 
 
-    return model, x_test,y_test, y_pred    
+    return model, x_test,y_test, y_pred 
+
+
+#Q4: WHICH FACTOR(gdp,population or pm2.5) is the strongest predictor.
+
+def run_q4_feature_importance_regression(df):
+    """
+    Q4: Multiple Linear Regression with standardized coefficients
+    (GDP, Population, pm2_5 → CO₂ Emissions)
+    """
+    print("\n=== Q4: Feature Importance (Standardized Multiple Linear Regression) ===")
+
+    # 1. Select relevant columns & drop missing values
+    data = df.dropna(subset=["gdp", "population", "pm2_5", "co2"])
+    x = data[["gdp", "population", "pm2_5"]]
+    y = data["co2"]
+
+    # 2. Standardize features
+    scaler = StandardScaler()
+    x_scaled = scaler.fit_transform(x)
+
+    # 3. Train-test split
+    x_train, x_test, y_train, y_test = train_test_split(x_scaled, y, test_size=0.2, random_state=42, shuffle=True)
+
+    # 4. Fit the model
+    model = LinearRegression().fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+
+    # 5. Evaluation metrics
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print(f"R² Score: {r2:.3f}")
+    print(f"RMSE: {rmse:.3f}")
+    print(f"Intercept: {model.intercept_:.3f}")
+    for feature, coef in zip(["gdp", "population", "pm2_5"], model.coef_):
+        print(f"{feature} (Standardized Coefficient): {coef:.4f}")
+
+    # 6. Statsmodels for detailed interpretation
+    X_sm = sm.add_constant(x_scaled)
+    ols_model = sm.OLS(y, X_sm).fit()
+    print("\n--- Statsmodels Summary ---")
+    print(ols_model.summary())
+
+    # 7. Save results to CSV (including standardized coefficients)
+    os.makedirs("outputs/tables", exist_ok=True)
+    summary = pd.DataFrame({
+        "Metric": ["R2", "RMSE", "Intercept"] + [f"{f}_Std_Coefficient" for f in ["gdp", "population", "pm2_5"]],
+        "Value": [r2, rmse, model.intercept_] + list(model.coef_)
+    })
+    summary.to_csv("outputs/tables/regression_summary_q4_standardized.csv", index=False)
+
+    # 8. Save statsmodels summary as text file
+    os.makedirs("outputs/text_summaries", exist_ok=True)
+    with open("outputs/text_summaries/regression_summary_q4_standardized.txt", "w") as f:
+        f.write(ols_model.summary().as_text())
+
+    return model, x_test, y_test, y_pred
