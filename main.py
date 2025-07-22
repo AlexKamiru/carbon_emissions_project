@@ -37,7 +37,12 @@ from scripts.visualize import (
     plot_pm25_by_income)
 
 #Regression
-from scripts.regression_models import (run_q1_simple_regression, run_q1_multiple_regression)
+from scripts.regression_models import (
+    run_q1_simple_regression,
+    run_q1_multiple_regression,
+    check_gdp_distribution,
+    run_q2_polynomial_regression,
+    run_q3_income_group_regression)
 
 
 def main():
@@ -114,6 +119,26 @@ def main():
     model, x_test, y_test, y_pred = run_q1_simple_regression(df)
     model, x_test, y_test, y_pred = run_q1_multiple_regression(df)
 
+
+    #Q2: IS ECONOMIC GROWTH TIED TO POLLUTION 
+    # Preparation: Check GDP distribution
+    print("\n=== Q2: Checking GDP Distribution ===")
+    skew = check_gdp_distribution(df)
+
+    if skew > 1:
+        print("GDP is highly skewed → Consider log-transforming for Polynomial Regression.")
+    else:
+        print("iGDP distribution looks fine → Raw GDP can be used.")
+ 
+      ##run question2 polynomial regression
+    model, X_test, y_test, y_pred = run_q2_polynomial_regression(df)
+
+    #Q3: ARE POOR COUNTRIES PUNISHED FOR INDUSTRIALIZING?
+    model, X_test, y_test, y_pred = run_q3_income_group_regression(df)
+
+
+
+            
 # ensure output directories exist
 os.makedirs("outputs/plots", mode=0o777, exist_ok=True)
 os.makedirs("outputs/tables",mode=0o777,exist_ok=True)

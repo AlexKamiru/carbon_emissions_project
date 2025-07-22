@@ -1,0 +1,9 @@
+Metric,Value
+R2,0.9844001193531972
+RMSE,523.5429253091711
+Intercept,-423.36311822705557
+gdp_Coefficient,4.93608286364769e-10
+pm2_5_Coefficient,6.769432644840278e-22
+Low Income_Coefficient,-3.149645750187801e-26
+Lower Middle Income_Coefficient,-2.9979871351438e-25
+Upper Middle Income_Coefficient,2.271481368777929e-23

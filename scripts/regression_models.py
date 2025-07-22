@@ -146,7 +146,7 @@ def check_gdp_distribution(df):
 
     return skewness
 
-#Function for the regression using log transformation.
+#Function for the polynomial regression using log transformation.
 def run_q2_polynomial_regression(df):
     """
     Q2: Polynomial Regression (log(GDP) → CO₂ Emissions)
@@ -207,3 +207,70 @@ def run_q2_polynomial_regression(df):
         f.write(ols_model.summary().as_text())
 
     return model, X_test, y_test, y_pred
+
+
+
+#Q3...ARE POOR COUNTRIES PUNISHED FOR INDUSTRIALIZING?
+
+def run_q3_income_group_regression(df):
+    """
+    its a multiple  regression with one-hot encoding(Income Group+GDP+PM2_5 -> co2)
+    """
+
+    #data preparation
+    data=df.dropna(subset=["gdp","pm2_5","income_group","co2"]).copy()
+
+    #one-hot encode income_group
+    """drop_first=True to avoid dummy variable trap"""
+    income_encoded = pd.get_dummies(data["income_group"], drop_first=True)
+
+    #combine encoded categories with numerical predictors(gdp+pm2_5)
+    x= pd.concat([data[["gdp","pm2_5"]], income_encoded], axis=1)
+    y= data["co2"]
+
+    #Train_test_split 
+    x_train, x_test, y_train, y_test= train_test_split(x,y,test_size=0.2, random_state=42,shuffle=True)
+
+    #fit the model
+    model= LinearRegression().fit(x_train, y_train)
+
+    #predictions and evaluation
+    y_pred= model.predict(x_test)
+    r2= r2_score(y_test,y_pred)
+    rmse= np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print("\nQ3: MULTIPLE REGRESSION (Income Group + GDP + pm2_5 → CO₂)")
+    print(f"R² Score: {r2:.3f}")
+    print(f"RMSE: {rmse:.3f}")
+    print(f"Intercept: {model.intercept_:.3f}")
+    for feature, coef in zip(x.columns, model.coef_):
+        print(f"{feature} Coefficient: {coef:.6f}")
+
+
+    #statsmodels for interpretation
+    X_sm = sm.add_constant(x)
+    X_sm = X_sm.apply(pd.to_numeric, errors='coerce').astype(float)  # convert objects to numeric
+    y = pd.to_numeric(y, errors='coerce').astype(float)
+    valid_idx = X_sm.notnull().all(axis=1) & y.notnull() # Drop any remaining NaN rows (just in case)
+    X_sm = X_sm.loc[valid_idx]
+    y = y.loc[valid_idx]
+
+    ols_model = sm.OLS(y.values, X_sm.values).fit()
+    print("\n--- Statsmodels Summary ---\n", ols_model.summary())    
+    
+    #save results
+    os.makedirs("outputs/tables", exist_ok=True)
+
+    #save metrics and coefficients
+    summary = pd.DataFrame({
+        "Metric": ["R2", "RMSE", "Intercept"] + [f"{feature}_Coefficient" for feature in x.columns],
+        "Value": [r2, rmse, model.intercept_] + list(model.coef_)
+    })
+    summary.to_csv("outputs/tables/regression_summary_q3_income_group.csv", index=False)
+
+    # Save Statsmodels Summary (TXT)
+    with open("outputs/tables/regression_summary_q3_income_group_statsmodels.txt", "w") as f:
+        f.write(ols_model.summary().as_text())
+
+
+    return model, x_test,y_test, y_pred    
