@@ -237,6 +237,27 @@ def run_q2_polynomial_regression(df):
     with open("outputs/tables/regression_summary_q2_polynomial_statsmodels.txt", "w") as f:
         f.write(ols_model.summary().as_text())
 
+
+    #  Visualization 
+
+    # Scatter + polynomial regression curve
+    plt.figure(figsize=(7, 5))
+    plt.scatter(X["log_gdp"], y, alpha=0.3, label="Actual", color="skyblue")
+    
+    # Generate smooth curve for polynomial
+    log_gdp_range = np.linspace(X["log_gdp"].min(), X["log_gdp"].max(), 300).reshape(-1, 1)
+    log_gdp_poly = poly.transform(log_gdp_range)
+    plt.plot(log_gdp_range, model.predict(log_gdp_poly), color="red", linewidth=2, label="Polynomial Fit")
+
+    plt.title("Q2: Polynomial Regression (log(GDP) → CO₂ Emissions)")
+    plt.xlabel("log(GDP)")
+    plt.ylabel("CO₂ Emissions")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.6)
+    plt.savefig("outputs/plots/regression_q2_polynomial.png")
+    plt.close()
+    print("Saved plot → outputs/plots/regression_q2_polynomial.png")   
+
     return model, X_test, y_test, y_pred
 
 
