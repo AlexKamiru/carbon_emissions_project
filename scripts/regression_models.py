@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np 
 import statsmodels.api as sm
+import matplotlib.pyplot as plt 
+import seaborn as sns 
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split
@@ -68,7 +70,18 @@ def run_q1_simple_regression(df):
     with open("outputs/tables/regression_summary_q1_simple_statsmodels.txt", "w") as f:
         f.write(sm_model.summary().as_text())
     
-
+    # === Embedded Visualization ===
+    plt.figure(figsize=(8, 5))
+    sns.scatterplot(x="gdp", y="co2", data=df, alpha=0.5, label="Actual")
+    plt.plot(df["gdp"], model.predict(x), color="red", lw=2, label="Fitted Line")
+    plt.title("Q1: Simple Linear Regression (GDP → CO₂ Emissions)")
+    plt.xlabel("GDP")
+    plt.ylabel("CO₂ Emissions")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("outputs/plots/q1_simple_regression.png", dpi=300)
+    plt.close()
+    print("Saved → outputs/plots/q1_simple_regression.png")
 
     return model, x_test,y_test,y_pred
 
@@ -119,6 +132,23 @@ def run_q1_multiple_regression(df):
     #===save statsmodels summary
     with open("outputs/tables/regression_summary_q1_multiple_statsmodels.txt","w") as f:
         f.write(ols_model.summary().as_text())
+
+
+
+    # === Embedded Visualization (Actual vs Predicted) ===
+    plt.figure(figsize=(6, 6))
+    sns.scatterplot(x=y_test, y=y_pred, alpha=0.5)
+    plt.plot([y_test.min(), y_test.max()],
+             [y_test.min(), y_test.max()],
+             'r--', lw=2)
+    plt.title("Q1: Actual vs Predicted CO₂ (Multiple Regression)")
+    plt.xlabel("Actual CO₂")
+    plt.ylabel("Predicted CO₂")
+    plt.tight_layout()
+    plt.savefig("outputs/plots/q1_multiple_actual_vs_pred.png", dpi=300)
+    plt.close()
+    print("Saved → outputs/plots/q1_multiple_actual_vs_pred.png")
+
         
     return model, x_test, y_test, y_pred
    
