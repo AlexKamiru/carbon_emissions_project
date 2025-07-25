@@ -71,6 +71,7 @@ def run_q1_simple_regression(df):
         f.write(sm_model.summary().as_text())
     
     # === Embedded Visualization ===
+    os.makedirs("outputs/plots", exist_ok=True)
     plt.figure(figsize=(8, 5))
     sns.scatterplot(x="gdp", y="co2", data=df, alpha=0.5, label="Actual")
     plt.plot(df["gdp"], model.predict(x), color="red", lw=2, label="Fitted Line")
@@ -136,6 +137,7 @@ def run_q1_multiple_regression(df):
 
 
     # === Embedded Visualization (Actual vs Predicted) ===
+    os.makedirs("outputs/plots", exist_ok=True)
     plt.figure(figsize=(6, 6))
     sns.scatterplot(x=y_test, y=y_pred, alpha=0.5)
     plt.plot([y_test.min(), y_test.max()],
@@ -239,7 +241,7 @@ def run_q2_polynomial_regression(df):
 
 
     #  Visualization 
-
+    os.makedirs("outputs/plots", exist_ok=True)
     # Scatter + polynomial regression curve
     plt.figure(figsize=(7, 5))
     plt.scatter(X["log_gdp"], y, alpha=0.3, label="Actual", color="skyblue")
@@ -323,6 +325,34 @@ def run_q3_income_group_regression(df):
     # Save Statsmodels Summary (TXT)
     with open("outputs/tables/regression_summary_q3_income_group_statsmodels.txt", "w") as f:
         f.write(ols_model.summary().as_text())
+
+    # === Visualization ===
+    os.makedirs("outputs/plots", exist_ok=True)
+    # (A) Actual vs Predicted Scatter Plot
+    plt.figure(figsize=(6, 5))
+    plt.scatter(y_test, y_pred, alpha=0.4, color="purple", edgecolors="black")
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], "r--", lw=2, label="Perfect Prediction")
+    plt.xlabel("Actual CO₂ Emissions")
+    plt.ylabel("Predicted CO₂ Emissions")
+    plt.title("Q3: Actual vs Predicted CO₂ Emissions")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.6)
+    plt.savefig("outputs/plots/regression_q3_actual_vs_predicted.png")
+    plt.close()
+    print("Saved plot → outputs/plots/regression_q3_actual_vs_predicted.png")
+    
+     # (B) Coefficient Importance Bar Plot
+    coef_df = pd.DataFrame({"Feature": x.columns, "Coefficient": model.coef_})
+    coef_df = coef_df.sort_values(by="Coefficient", ascending=False)
+
+    plt.figure(figsize=(7, 4))
+    plt.barh(coef_df["Feature"], coef_df["Coefficient"], color="teal")
+    plt.xlabel("Coefficient Value")
+    plt.title("Q3: Feature Importance (Are Poor Countries Punished?)")
+    plt.grid(axis="x", linestyle="--", alpha=0.6)
+    plt.savefig("outputs/plots/regression_q3_feature_importance.png")
+    plt.close()
+    print("Saved plot → outputs/plots/regression_q3_feature_importance.png")
 
 
     return model, x_test,y_test, y_pred 
