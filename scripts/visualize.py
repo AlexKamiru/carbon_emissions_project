@@ -45,7 +45,7 @@ def plot_income_group_co2_share(co2_by_income):
 
 def plot_co2_vs_gdp(filtered_df):
     """Scatter plot of CO2 per capita vs GDP with correlation annotation."""
-    output_path = os.path.join(OUTPUT_DIR, "co2_vs_gdp_scatter.png")
+    output_path = os.path.join("outputs","plots" "co2_vs_gdp_scatter.png")
     plt.figure(figsize=(10, 6))
     sns.scatterplot(data=filtered_df, x="gdp", y="co2_per_capita", alpha=0.5)
     plt.title("CO₂ per Capita vs GDP")
@@ -67,7 +67,7 @@ def plot_poor_countries_industrialization(summary):
     plt.ylabel("Country")
     plt.tight_layout()
 
-    plt.savefig(os.path.join(OUTPUT_DIR, "industrializing_poor_countries.png"))
+    plt.savefig(os.path.join("outputs","plots" "industrializing_poor_countries.png"))
     plt.close()
 
 
@@ -83,7 +83,7 @@ def plot_pm25_by_income(combined_df):
     plt.xticks(rotation=45)
     plt.tight_layout()
 
-    plt.savefig(os.path.join(OUTPUT_DIR, "pm25_exposure_by_income.png"))
+    plt.savefig(os.path.join("outputs","plots" "pm25_exposure_by_income.png"))
     plt.close()
 
 
