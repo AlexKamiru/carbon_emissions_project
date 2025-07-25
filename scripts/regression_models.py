@@ -411,6 +411,35 @@ def run_q4_feature_importance_regression(df):
     os.makedirs("outputs/text_summaries", exist_ok=True)
     with open("outputs/text_summaries/regression_summary_q4_standardized.txt", "w") as f:
         f.write(ols_model.summary().as_text())
+    
+    # ===  Visualization ===
+    os.makedirs("outputs/plots", exist_ok=True)
+
+    # (A) Actual vs Predicted Scatter Plot
+    plt.figure(figsize=(6, 5))
+    plt.scatter(y_test, y_pred, alpha=0.5, color="darkgreen", edgecolors="black")
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], "r--", lw=2, label="Perfect Prediction")
+    plt.xlabel("Actual CO₂ Emissions")
+    plt.ylabel("Predicted CO₂ Emissions")
+    plt.title("Q4: Actual vs Predicted CO₂ Emissions")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.6)
+    plt.savefig("outputs/plots/regression_q4_actual_vs_predicted.png")
+    plt.close()
+    print("Saved plot → outputs/plots/regression_q4_actual_vs_predicted.png")
+
+    # (B) Standardized Coefficient Importance
+    coef_df = pd.DataFrame({"Feature": ["gdp", "population", "pm2_5"], "Std_Coefficient": model.coef_})
+    coef_df = coef_df.sort_values(by="Std_Coefficient", ascending=True)
+
+    plt.figure(figsize=(6, 4))
+    plt.barh(coef_df["Feature"], coef_df["Std_Coefficient"], color="orange")
+    plt.xlabel("Standardized Coefficient")
+    plt.title("Q4: Feature Importance (Standardized)")
+    plt.grid(axis="x", linestyle="--", alpha=0.6)
+    plt.savefig("outputs/plots/regression_q4_feature_importance.png")
+    plt.close()
+    print("Saved plot → outputs/plots/regression_q4_feature_importance.png")
 
     return model, x_test, y_test, y_pred
 
