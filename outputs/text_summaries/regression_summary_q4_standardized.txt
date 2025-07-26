@@ -3,8 +3,8 @@
 Dep. Variable:                    co2   R-squared:                       0.986
 Model:                            OLS   Adj. R-squared:                  0.986
 Method:                 Least Squares   F-statistic:                 3.990e+05
-Date:                Fri, 25 Jul 2025   Prob (F-statistic):               0.00
-Time:                        13:58:23   Log-Likelihood:            -1.3022e+05
+Date:                Sat, 26 Jul 2025   Prob (F-statistic):               0.00
+Time:                        12:13:31   Log-Likelihood:            -1.3022e+05
 No. Observations:               17083   AIC:                         2.604e+05
 Df Residuals:                   17079   BIC:                         2.605e+05
 Df Model:                           3                                         
