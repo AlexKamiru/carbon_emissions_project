@@ -1,14 +1,35 @@
 ```markdown
 # 🌍 Carbon Emissions & Inequality Analysis  
 
-This project investigates how **CO₂ emissions**, **economic growth (GDP)**, and **air pollution (PM2.5)** vary across income groups.  
-It aims to answer key questions:
+This project explores the relationship between CO₂ emissions, economic growth, and air pollution across different income groups. Using data storytelling, statistical analysis, and regression modeling, it uncovers key insights into how industrialization and wealth distribution contribute to environmental inequality.
 
-1. **Who emits the most CO₂ – rich or poor countries?**  
-2. **Is economic growth tied to rising emissions?**  
-3. **Are low-income countries punished for industrializing?**  
-4. **Which factors (GDP, population, PM2.5) are strongest predictors of CO₂ emissions?**
+Key Questions Addressed
+✔ Do richer countries produce higher CO₂ emissions?
+✔ Is economic growth strongly tied to pollution levels?
+✔ Are poorer countries penalized for industrializing?
+✔ Which factor—GDP, population, or air pollution (PM2.5)—is the strongest predictor of CO₂ emissions?
 
+Highlights
+Data Pipeline: Automated cleaning, merging, and processing of raw datasets (CO₂ emissions, GDP, PM2.5, and climate data).
+
+Exploratory Analysis & Visualizations: Income-group comparisons, correlation analysis, and pollution exposure trends.
+
+Regression Modeling:
+
+Simple & Multiple Linear Regression
+
+Polynomial Regression (log-transformed GDP)
+
+Standardized Feature Importance Analysis
+
+Outputs: Publication-ready plots, statistical summaries, and feature importance rankings.
+
+Tech Stack
+Python (pandas, seaborn, matplotlib, scikit-learn, statsmodels)
+
+Data Sources: World Bank, Climate & Air Pollution Datasets
+
+Environment: Virtual environment (.venv) with reproducible dependencies (requirements.txt)
 ---
 
 ##  **Project Structure**
