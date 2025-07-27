@@ -81,7 +81,7 @@ carbon_emissions_project/
 
 ```
 
----
+```markdown
 
 ##  **Key Analyses & Findings**
 
@@ -122,14 +122,14 @@ carbon_emissions_project/
  *Statsmodels Summaries:* Located in `outputs/tables/`
 
 ---
-
+```
 ##  **How to Run**
 
 1. **Clone the repo**  
    ```bash
    git clone https://github.com/yourusername/carbon_emissions_project.git
    cd carbon_emissions_project
-````
+   ```
 
 2. **Set up virtual environment**
 
