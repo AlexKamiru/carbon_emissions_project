@@ -34,59 +34,52 @@ Environment: Virtual environment (.venv) with reproducible dependencies (require
 
 ##  **Project Structure**
 
-```
+```markdown 
 
-carbon\_emissions\_project/
+carbon_emissions_project/
 │
 ├── data/
-│   ├── raw/                         # Original datasets
-│   │   ├── co2\_emissions.csv
-│   │   ├── air\_pollution.csv
-│   │   ├── income\_group.csv
-│   │   └── temperature\_data.csv
+│   ├── raw/
+│   │   ├── air_pollution.csv
+│   │   ├── co2_emissions.csv
+│   │   ├── income_group.csv
+│   │   └── temperature_data.csv
 │   └── processed/
-│       └── combined\_data.csv        # Cleaned + merged dataset (29k rows, 15 cols)
+│       └── combined_data.csv
+│
+├── models/
+│   ├── q1_simple_regression_model.pkl
+│   ├── q1_multiple_regression_model.pkl
+│   ├── q2_polynomial_regression_model.pkl
+│   ├── q3_income_group_regression_model.pkl
+│   ├── q4_standardized_regression_model.pkl
+│   └── q4_standardized_scaler.pkl
 │
 ├── outputs/
-│   ├── plots/                       # Visual & regression outputs
-│   │   ├── co2\_income\_share.png
-│   │   ├── co2\_vs\_gdp\_scatter.png
-│   │   ├── industrializing\_poor\_countries.png
-│   │   ├── pm25\_exposure\_by\_income.png
-│   │   ├── gdp\_distribution.png
-│   │   ├── q1\_simple\_regression.png
-│   │   ├── q1\_multiple\_actual\_vs\_pred.png
-│   │   ├── q2\_polynomial.png
-│   │   ├── regression\_q3\_actual\_vs\_predicted.png
-│   │   ├── regression\_q3\_feature\_importance.png
-│   │   ├── regression\_q4\_actual\_vs\_predicted.png
-│   │   └── regression\_q4\_feature\_importance.png
-│   │
-│   ├── tables/                      # CSV + Statsmodels summaries
-│   │   ├── regression\_summary\_q1\_simple.csv
-│   │   ├── regression\_summary\_q1\_multiple.csv
-│   │   ├── regression\_summary\_q2\_polynomial.csv
-│   │   ├── regression\_summary\_q3\_income\_group.csv
-│   │   ├── regression\_summary\_q4\_standardized.csv
-│   │   └── \*.txt (Statsmodels detailed summaries)
-│   │
-│   └── text\_summaries/
-│       └── regression\_summary\_q4\_standardized.txt
+│   ├── plots/
+│   │   ├── regression_q4_actual_vs_predicted.png
+│   │   └── regression_q4_feature_importance.png
+│   ├── tables/
+│   │   ├── regression_summary_q1_simple_statsmodels.txt
+│   │   ├── regression_summary_q1_multiple_statsmodels.txt
+│   │   ├── regression_summary_q2_polynomial_statsmodels.txt
+│   │   └── regression_summary_q3_income_group_statsmodels.txt
+│   └── text_summaries/
+│       └── regression_summary_q4_standardized.txt
 │
 ├── scripts/
-│   ├── clean\_data.py
-│   ├── load\_data.py
-│   ├── merge\_data.py
-│   ├── analyze\_data.py              # Exploratory & descriptive stats
-│   ├── visualize.py                 # Bar/Scatter/Box plots
-│   └── regression\_models.py         # Q1–Q4 regression models
+│   ├── load_data.py
+│   ├── clean_data.py
+│   ├── merge_data.py
+│   ├── analyze_data.py
+│   └── regression_models.py
 │
-├── utils/                           # Helper functions (optional)
-├── main.py                          # Main execution pipeline
-├── requirements.txt                 # Python dependencies
-└── README.md                        # You're here!
+├── README.md                 (documentation)
+├── requirements.txt           
+├── .gitignore
+└── venv/ (or .venv)           
 
-````
+```
 
 ---
 
