@@ -10,6 +10,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 import os
+import joblib #for saving trained models
+
+def save_model(model, model_name):
+    """Save trained model to models/ directory as a .pkl file"""
+    os.makedirs("models", exist_ok=True)
+    model_path = f"models/{model_name}.pkl"
+    joblib.dump(model, model_path)
+    print(f"Model saved → {model_path}")
 
 ##Fetch the data
 def load_processed_data():
@@ -83,7 +91,8 @@ def run_q1_simple_regression(df):
     plt.savefig("outputs/plots/q1_simple_regression.png", dpi=300)
     plt.close()
     print("Saved → outputs/plots/q1_simple_regression.png")
-
+    
+    save_model(model, "q1_simple_regression_model")  # Save model
     return model, x_test,y_test,y_pred
 
 
@@ -151,7 +160,8 @@ def run_q1_multiple_regression(df):
     plt.close()
     print("Saved → outputs/plots/q1_multiple_actual_vs_pred.png")
 
-        
+    
+    save_model(model, "q1_multiple_regression_model")  # Save model    
     return model, x_test, y_test, y_pred
    
 
@@ -259,7 +269,8 @@ def run_q2_polynomial_regression(df):
     plt.savefig("outputs/plots/regression_q2_polynomial.png")
     plt.close()
     print("Saved plot → outputs/plots/regression_q2_polynomial.png")   
-
+    
+    save_model(model, "q2_polynomial_regression_model")  # Save model
     return model, X_test, y_test, y_pred
 
 
@@ -354,7 +365,7 @@ def run_q3_income_group_regression(df):
     plt.close()
     print("Saved plot → outputs/plots/regression_q3_feature_importance.png")
 
-
+    save_model(model, "q3_income_group_regression_model")  # Save model
     return model, x_test,y_test, y_pred 
 
 
@@ -440,14 +451,7 @@ def run_q4_feature_importance_regression(df):
     plt.savefig("outputs/plots/regression_q4_feature_importance.png")
     plt.close()
     print("Saved plot → outputs/plots/regression_q4_feature_importance.png")
-
-    return model, x_test, y_test, y_pred
-
-
-
-
-
     
-
-
-
+    save_model(model, "q4_standardized_regression_model")  # Save model
+    save_model(scaler, "q4_standardized_scaler")  # Save scaler
+    return model, x_test, y_test, y_pred
