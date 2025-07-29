@@ -1,122 +1,218 @@
 import streamlit as st
+
+# -------------------------
+# 📌 INTRODUCTION SECTION
+# -------------------------
+st.title("🌍 CO₂ Emissions Analysis & Prediction")
+st.markdown("""
+Welcome to this interactive dashboard exploring **global CO₂ emissions** and their relationship with key socioeconomic and environmental factors.
+
+---
+
+### 🔍 **Why This Project?**
+
+Climate change is one of the most pressing challenges of our time. Understanding the **drivers of CO₂ emissions** helps policymakers, researchers, and citizens make informed decisions for a sustainable future.
+
+---
+
+### 📊 **What You'll Find Here:**
+
+- Insights on how GDP, PM2.5, and population impact CO₂ emissions
+- Visual analysis by **country**, **region**, and **income group**
+- Regression models to predict emissions
+- A full walkthrough from data cleaning to model comparison
+
+---
+
+### 🛠️ **Tools & Techniques Used:**
+
+- Python (pandas, scikit-learn, seaborn, plotly)
+- Regression modeling: Linear, Ridge, Lasso
+- Data visualization (Plotly)
+- Streamlit for interactivity
+
+---
+
+""")
+
+# -------------------------
+# 📊 DATA SOURCES & OVERVIEW
+# -------------------------
+st.header("📊 Data Sources & Overview")
+
+st.markdown("""
+This project combines multiple open datasets to explore the factors influencing **CO₂ emissions** across countries and over time.
+
+---
+
+### 📚 **Datasets Used:**
+
+- **CO₂ Emissions Data:** Global emissions by country and year (Our World in Data)
+- **PM2.5 Air Pollution:** Fine particulate matter concentrations (World Bank)
+- **GDP & Population:** Economic and demographic data (World Bank)
+- **Income Groups & Regions:** World Bank classification
+
+---
+
+All data is preprocessed and merged into a single dataset (`combined_data.csv`) for analysis.
+""")
+
+# Load Data
 import pandas as pd
-import plotly.express as px
-import os
-
-# ==========================
-# ✅ Helper Functions
-# ==========================
-
-def clean_for_plotting(df, required_columns):
-    """
-    Cleans dataframe for Plotly plotting:
-    - Drops rows with NaN in required columns
-    - Fills population (if present) with 1 to avoid size errors
-    """
-    df_clean = df.dropna(subset=required_columns).copy()
-
-    if "population" in required_columns and "population" in df_clean.columns:
-        df_clean["population"] = df_clean["population"].fillna(1)
-
-    return df_clean
-
 
 @st.cache_data
 def load_data():
-    """Load processed combined data"""
     df = pd.read_csv("data/processed/combined_data.csv")
     return df
 
-
-# ==========================
-# ✅ Streamlit App
-# ==========================
-
-st.set_page_config(page_title="CO₂ Emissions Dashboard", layout="wide")
-
-st.title("🌍 CO₂ Emissions: Interactive Data Story")
-st.markdown("Analyze relationships between **GDP, Pollution, and CO₂ emissions**.")
-
-# ---- Load Data ----
 df = load_data()
 
-# ---- Sidebar Filters ----
-st.sidebar.header("🔍 Filters")
-income_groups = st.sidebar.multiselect(
-    "Select Income Groups",
-    options=df["income_group"].dropna().unique(),
-    default=df["income_group"].dropna().unique()
+# Optional Filters
+st.subheader("🔎 Explore the Dataset")
+region_filter = st.selectbox("Filter by region (optional):", ["All"] + sorted(df["region"].dropna().unique()))
+income_filter = st.selectbox("Filter by income_group (optional):", ["All"] + sorted(df["income_group"].dropna().unique()))
+
+# Apply filters
+filtered_df = df.copy()
+if region_filter != "All":
+    filtered_df = filtered_df[filtered_df["region"] == region_filter]
+if income_filter != "All":
+    filtered_df = filtered_df[filtered_df["income_group"] == income_filter]
+
+# Show data
+st.dataframe(filtered_df.head(50), use_container_width=True)
+
+
+import plotly.express as px
+import pandas as pd
+
+from scripts.analyze_data import (
+    rich_countries_co2_share,
+    co2_vs_gdp_growth,
+    industrializing_poor_countries,
+    pm25_exposure_by_income
 )
 
-regions = st.sidebar.multiselect(
-    "Select Regions",
-    options=df["region"].dropna().unique(),
-    default=df["region"].dropna().unique()
-)
+# Load cleaned data
+df = pd.read_csv("data/processed/combined_data.csv")
 
-filtered_df = df[(df["income_group"].isin(income_groups)) & (df["region"].isin(regions))]
+st.set_page_config(page_title="CO₂ Emissions Analysis", layout="wide")
+st.title("🌍 Guided Analysis: CO₂ Emissions, Economics, and Equity")
 
-st.markdown(f"**Showing {len(filtered_df)} records after filtering.**")
+st.markdown("""
+Explore key questions at the intersection of **climate, economics, and justice**:
+- Are rich countries causing most of the emissions?
+- Is economic growth always tied to pollution?
+- Are poor countries punished for industrializing?
+""")
 
-# ==========================
-# ✅ PLOTS
-# ==========================
+# ------------------------------------------------
+# Q1: Are Rich Countries Causing Most of the CO₂ Emissions?
+# ------------------------------------------------
+st.header("1️⃣ Are Rich Countries Causing Most of the CO₂ Emissions?")
+st.markdown("""
+This analysis investigates whether wealthier nations contribute more to global CO₂ emissions. 
+It’s crucial for assessing global responsibility and equity in climate action.
+""")
 
-# --- 1. CO₂ vs GDP Scatter ---
-plot_df = clean_for_plotting(filtered_df, ["gdp", "co2", "population"])
-fig1 = px.scatter(
-    plot_df,
-    x="gdp",
-    y="co2",
-    color="income_group",
-    size="population",
-    hover_name="country",
-    title="CO₂ Emissions vs GDP",
-    size_max=60
-)
-st.plotly_chart(fig1, use_container_width=True)
+co2_share_df = rich_countries_co2_share(df)
 
-# --- 2. CO₂ Emissions by Income Group (Bar Chart) ---
-plot_df = clean_for_plotting(filtered_df, ["income_group", "co2"])
-fig2 = px.bar(
-    plot_df.groupby("income_group", as_index=False)["co2"].mean(),
+fig_q1 = px.bar(
+    co2_share_df.reset_index(),
     x="income_group",
-    y="co2",
+    y="percent_share",
     color="income_group",
-    title="Average CO₂ Emissions by Income Group"
+    text="percent_share",
+    title="CO₂ Emissions Share by Income Group",
+    labels={"percent_share": "Share of Global Emissions (%)"}
 )
-st.plotly_chart(fig2, use_container_width=True)
 
-# --- 3. PM2.5 Pollution by Income Group (Bar Chart) ---
-if "pm2_5" in filtered_df.columns:
-    plot_df = clean_for_plotting(filtered_df, ["income_group", "pm2_5"])
-    fig3 = px.bar(
-        plot_df.groupby("income_group", as_index=False)["pm2_5"].mean(),
-        x="income_group",
-        y="pm2_5",
-        color="income_group",
-        title="Average PM2.5 Pollution by Income Group"
-    )
-    st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig_q1, use_container_width=True)
 
-# --- 4. GDP vs PM2.5 Scatter (Optional Extra Insight) ---
-if "pm2_5" in filtered_df.columns:
-    plot_df = clean_for_plotting(filtered_df, ["gdp", "pm2_5"])
-    fig4 = px.scatter(
-        plot_df,
-        x="gdp",
-        y="pm2_5",
-        color="income_group",
-        hover_name="country",
-        title="GDP vs PM2.5 Pollution"
-    )
-    st.plotly_chart(fig4, use_container_width=True)
+st.dataframe(co2_share_df.style.format({"total_co2": "{:,.0f}", "percent_share": "{:.2f}%"}))
 
-# ==========================
-# ✅ Display Regression Summary (Optional)
-# ==========================
+st.markdown("✅ **Insight:** High-income and upper-middle-income countries account for a significant share of global CO₂ emissions, despite having lower populations compared to lower-income regions.")
 
-if os.path.exists("outputs/tables/regression_summary_q1_multiple.csv"):
-    st.subheader("📑 Regression Summary (Q1: Multiple Regression)")
-    summary_df = pd.read_csv("outputs/tables/regression_summary_q1_multiple.csv")
-    st.dataframe(summary_df)
+# ------------------------------------------------
+# Q2: Is Economic Growth Always Tied to Pollution?
+# ------------------------------------------------
+st.header("2️⃣ Is Economic Growth Always Tied to Pollution?")
+st.markdown("""
+This section explores the **correlation between GDP and CO₂ emissions per capita** to examine if economic progress inevitably increases pollution — or if countries are decoupling growth from emissions.
+""")
+
+correlation_value, scatter_df = co2_vs_gdp_growth(df)
+
+fig_q2 = px.scatter(
+    scatter_df,
+    x="gdp",
+    y="co2_per_capita",
+    log_x=True,
+    trendline="ols",
+    title=f"GDP vs CO₂ per Capita (Correlation: {correlation_value:.2f})",
+    labels={"gdp": "GDP (log scale)", "co2_per_capita": "CO₂ Emissions per Capita"}
+)
+
+st.plotly_chart(fig_q2, use_container_width=True)
+
+st.markdown(f"✅ **Insight:** The Pearson correlation coefficient is **{correlation_value:.2f}**, suggesting that while emissions generally increase with GDP, **some economies may decouple growth from pollution**.")
+
+# ------------------------------------------------
+# Q3: Are Poor Countries Punished for Industrializing?
+# ------------------------------------------------
+st.header("3️⃣ Are Poor Countries Punished for Industrializing?")
+st.markdown("""
+We analyze two dimensions:
+1. **Growth Penalty** – Do low-income countries face higher emissions growth as they industrialize?
+2. **Air Quality Exposure** – Are poorer regions more exposed to pollution like PM2.5?
+""")
+
+# -- 3a: Growth Penalty
+st.subheader("📈 Industrial Growth vs Emissions in Low-Income Countries")
+
+poor_growth_summary = industrializing_poor_countries(df)
+
+fig_q3a = px.scatter(
+    poor_growth_summary,
+    x="gdp",
+    y="co2_growth_prct",
+    size="co2_per_capita",
+    hover_name="country",
+    title="GDP vs CO₂ Growth in Low-Income Countries",
+    labels={"gdp": "Average GDP", "co2_growth_prct": "Avg CO₂ Growth (%)"}
+)
+
+st.plotly_chart(fig_q3a, use_container_width=True)
+
+st.markdown("✅ **Insight:** Many poor countries are growing economically and increasing emissions — but still contribute **very little** overall. Growth can mean trade-offs without the right support.")
+
+# -- 3b: Air Quality
+st.subheader("🌫️ Air Quality: PM2.5 Exposure by Income Group")
+
+pm25_df = pm25_exposure_by_income(df)
+
+fig_q3b = px.bar(
+    pm25_df,
+    x="income_group",
+    y="avg_pm2_5",
+    color="income_group",
+    title="Average PM2.5 Exposure by Income Group",
+    labels={"avg_pm2_5": "PM2.5 Concentration (μg/m³)"}
+)
+
+st.plotly_chart(fig_q3b, use_container_width=True)
+
+st.markdown("""
+✅ **Insight:** Despite contributing less to global emissions, **low-income groups experience higher exposure to air pollution**. This reflects global environmental injustice.
+""")
+
+# ------------------------------------------------
+# End Note
+# ------------------------------------------------
+st.markdown("""
+---
+📘 Curious to explore the models behind this dashboard?  
+See the code in `analyze_data.py` and other modules for detailed logic and preprocessing.
+
+🔍 Built with: `pandas`, `plotly`, `Streamlit`
+""")
