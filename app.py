@@ -349,14 +349,14 @@ col1, col2 = st.columns(2)
 # (A) Actual vs Predicted Scatter Plot
 with col1:
     st.subheader("🔍 Actual vs Predicted CO₂ Emissions")
-    st.image("outputs/plots/regression_q3_actual_vs_predicted.png", use_column_width=True)
+    st.image("outputs/plots/regression_q3_actual_vs_predicted.png", use_container_width=True)
     st.caption("This scatter plot compares predicted CO₂ emissions with actual values. \
 A tighter diagonal pattern indicates better model performance.")
 
 # (B) Feature Importance
 with col2:
     st.subheader("📊 Feature Importance (Coefficient Size)")
-    st.image("outputs/plots/regression_q3_feature_importance.png", use_column_width=True)
+    st.image("outputs/plots/regression_q3_feature_importance.png", use_container_width=True)
     st.caption("The bar plot displays the regression coefficients. \
 Larger absolute values indicate stronger influence on CO₂ emissions.")
 
@@ -367,4 +367,53 @@ The regression suggests that **GDP and PM2.5** remain strong predictors of CO₂
 However, income group dummies (e.g., "Upper middle income", "High income") also show measurable impact—indicating **systemic inequality** in emission contributions and consequences.
 
 This could imply that **lower-income countries**, despite emitting less, may experience disproportionate burdens as they industrialize.
+""")
+
+
+# =========================
+# Q4: Which Factor is the Strongest Predictor?
+# =========================
+st.header("🔎 Q4: Which Factor is the Strongest Predictor?")
+st.markdown("""
+In this section, we standardize all features to compare their **relative importance** on CO₂ emissions.
+We fit a **multiple linear regression** model using standardized values for:
+- **GDP**
+- **Population**
+- **PM2.5**
+
+The feature with the **largest standardized coefficient** is the most influential.
+""")
+
+from scripts.regression_models import run_q4_feature_importance_regression
+
+
+# Run the standardized regression model
+model_q4, x_test_q4, y_test_q4, y_pred_q4 = run_q4_feature_importance_regression(df)
+
+# === Visuals ===
+col1, col2 = st.columns(2)
+
+# (A) Actual vs Predicted Scatter Plot
+with col1:
+    st.subheader("🎯 Actual vs Predicted CO₂ Emissions")
+    st.image("outputs/plots/regression_q4_actual_vs_predicted.png", use_container_width=True)
+    st.caption("A scatter plot comparing model predictions with actual CO₂ emissions. \
+Good alignment along the red line indicates better predictions.")
+
+# (B) Feature Importance Bar Chart
+with col2:
+    st.subheader("📊 Standardized Feature Importance")
+    st.image("outputs/plots/regression_q4_feature_importance.png", use_container_width=True)
+    st.caption("This chart shows the strength of each feature in predicting CO₂ emissions. \
+Standardized coefficients allow direct comparison of impact size.")
+
+# === Insight ===
+st.markdown("""
+#### 💡 Insight:
+From the standardized regression results:
+- A **higher standardized coefficient** means a stronger impact on CO₂ emissions.
+- This helps us **identify the dominant driver** of emissions when all features are placed on the same scale.
+
+Check the plot to see whether **GDP**, **population**, or **PM2.5** exerts the strongest influence.  
+This can guide **policy decisions** on where interventions may be most impactful.
 """)
