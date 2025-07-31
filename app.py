@@ -283,3 +283,88 @@ st.markdown("""
 Adding **population** and **air pollution (PM2.5)** improves model performance (higher R², lower RMSE).  
 This suggests that CO₂ emissions are more strongly influenced by **a combination of economic size and environmental/population pressures**, not GDP alone.
 """)
+
+# ==============================
+# Q2: IS ECONOMIC GROWTH TIED TO POLLUTION?
+# ==============================
+st.markdown("## Q2: Is Economic Growth Tied to Pollution?")
+st.markdown("""
+We explore whether **economic growth (GDP)** has a **nonlinear relationship** with CO₂ emissions using a **2nd-degree polynomial regression** model. 
+Due to skewed GDP distribution, we apply a **log transformation** to the predictor before fitting the model.
+""")
+
+from scripts.regression_models import check_gdp_distribution, run_q2_polynomial_regression 
+
+# Show GDP distribution
+with st.expander("See GDP Distribution"):
+    skewness = check_gdp_distribution(df)
+    st.image("outputs/plots/gdp_distribution.png", caption="Histogram of GDP (Skewed Distribution)", use_container_width=True)
+    st.markdown(f"**Skewness:** {skewness:.2f}")
+    if skewness > 1:
+        st.warning("GDP is highly skewed → log transformation applied before modeling.")
+
+# Run polynomial regression
+model, X_test, y_test, y_pred = run_q2_polynomial_regression(df)
+
+# Display results
+st.image("outputs/plots/regression_q2_polynomial.png", caption="Polynomial Fit: log(GDP) vs CO₂", use_container_width=True)
+
+st.markdown("### Model Performance")
+summary_q2 = pd.read_csv("outputs/tables/regression_summary_q2_polynomial.csv")
+st.dataframe(summary_q2, use_container_width=True)
+
+with st.expander("See Statsmodels OLS Summary (Q2)"):
+    with open("outputs/tables/regression_summary_q2_polynomial_statsmodels.txt", "r") as f:
+        st.text(f.read())
+
+st.markdown("""
+### ✅ Insight
+The **polynomial regression curve** suggests that the relationship between GDP and CO₂ emissions is **non-linear**. 
+Higher GDP tends to correlate with higher emissions, but the rate of increase may vary.
+""")
+
+
+# =========================
+# Q3: Are Poor Countries Punished for Industrializing?
+# =========================
+st.header("📉 Q3: Are Poor Countries Punished for Industrializing?")
+st.markdown("""
+In this section, we investigate whether **low-income countries are penalized with higher CO₂ emissions as they industrialize**.
+We use a **multiple linear regression** model that includes:
+- **GDP** (economic indicator)
+- **PM2.5** (pollution)
+- **Income group** (one-hot encoded)
+
+This helps us assess if income classification influences emissions **after accounting for economic growth and pollution**.
+""")
+
+from scripts.regression_models import run_q3_income_group_regression
+
+# Run model
+model_q3, x_test_q3, y_test_q3, y_pred_q3 = run_q3_income_group_regression(df)
+
+# === Visuals ===
+col1, col2 = st.columns(2)
+
+# (A) Actual vs Predicted Scatter Plot
+with col1:
+    st.subheader("🔍 Actual vs Predicted CO₂ Emissions")
+    st.image("outputs/plots/regression_q3_actual_vs_predicted.png", use_column_width=True)
+    st.caption("This scatter plot compares predicted CO₂ emissions with actual values. \
+A tighter diagonal pattern indicates better model performance.")
+
+# (B) Feature Importance
+with col2:
+    st.subheader("📊 Feature Importance (Coefficient Size)")
+    st.image("outputs/plots/regression_q3_feature_importance.png", use_column_width=True)
+    st.caption("The bar plot displays the regression coefficients. \
+Larger absolute values indicate stronger influence on CO₂ emissions.")
+
+# === Insight ===
+st.markdown("""
+#### 💡 Insight:
+The regression suggests that **GDP and PM2.5** remain strong predictors of CO₂ emissions.  
+However, income group dummies (e.g., "Upper middle income", "High income") also show measurable impact—indicating **systemic inequality** in emission contributions and consequences.
+
+This could imply that **lower-income countries**, despite emitting less, may experience disproportionate burdens as they industrialize.
+""")
