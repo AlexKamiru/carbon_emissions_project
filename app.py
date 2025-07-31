@@ -417,3 +417,54 @@ From the standardized regression results:
 Check the plot to see whether **GDP**, **population**, or **PM2.5** exerts the strongest influence.  
 This can guide **policy decisions** on where interventions may be most impactful.
 """)
+
+
+# =========================
+# 📌 Final Insights & Summary
+# =========================
+st.header("🧠 Final Insights & Summary")
+st.markdown("""
+We've explored CO₂ emissions from multiple angles using real-world data.  
+Here's a quick summary of our findings:
+
+---
+
+### 🔹 Q1: Do Rich Countries Emit More CO₂?
+- ✅ **Yes**, countries with higher GDP generally have higher CO₂ emissions.
+- 📉 But there's some variation — wealth isn't the **only** factor.
+
+---
+
+### 🔹 Q2: Is Economic Growth Tied to Pollution?
+- 📈 There's a **nonlinear relationship**: as GDP grows, CO₂ rises at a **decreasing rate**.
+- 📉 Log-transformation helps reveal this trend — richer economies may be **more efficient**.
+
+---
+
+### 🔹 Q3: Are Poor Countries Punished for Industrializing?
+- 🌍 **Lower-income countries** often show **higher emissions** per unit GDP.
+- This raises issues around **climate justice** — poorer nations bear **disproportionate burdens**.
+
+---
+
+### 🔹 Q4: Which Factor is the Strongest Predictor?
+- 📊 Based on standardized regression:
+    - **[Top factor here: GDP / PM2.5 / Population]** has the **strongest influence** on emissions.
+- Standardization helped us compare features on **equal footing**.
+
+---
+
+### 📌 Overall Takeaways
+- CO₂ emissions are shaped by **economic**, **population**, and **environmental** factors.
+- Visual and statistical analysis helps inform **smarter climate policy** and **data-driven decisions**.
+
+---
+
+""")
+
+# Add download links or GitHub link
+st.markdown("### 📥 [Download Full Report](outputs/tables/)  |  🔗 [View Code on GitHub](https://github.com/AlexKamiru/carbon_emissions_project.git)")
+
+# Optional: Button to restart app
+if st.button("🔄 Restart Analysis"):
+    st.experimental_rerun()
