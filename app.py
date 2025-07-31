@@ -216,3 +216,70 @@ See the code in `analyze_data.py` and other modules for detailed logic and prepr
 
 🔍 Built with: `pandas`, `plotly`, `Streamlit`
 """)
+
+
+# Regression Analysis Section
+st.header("📊 Regression Analysis")
+st.markdown("""
+This section explores four key questions using regression models to understand the drivers of CO₂ emissions:
+1. Do rich countries have high CO₂ emissions?
+2. Is economic growth always tied to pollution?
+3. Are poor countries punished for industrializing?
+4. Which factor (GDP, population, PM2.5) is the strongest predictor?
+
+We use different regression models (linear, polynomial, and one-hot encoded) to provide insights.
+""")
+
+## Q1 – Do Rich Countries Have High CO₂ Emissions?
+st.header("Q1: Do Rich Countries Have High CO₂ Emissions?")
+st.markdown("""
+**Hypothesis:** Rich countries, with higher GDPs, emit more CO₂.
+
+We'll test this with:
+- ✅ Simple Linear Regression: `GDP → CO₂`
+- ✅ Multiple Linear Regression: `GDP + Population + PM2.5 → CO₂`
+""")
+
+# --- Load data
+df= pd.read_csv("data/processed/combined_data.csv").copy()  # Assuming combined_df is already loaded and preprocessed
+
+from scripts.regression_models import run_q1_simple_regression, run_q1_multiple_regression
+
+# --- Run models
+simple_model, x_test_simple, y_test_simple, y_pred_simple = run_q1_simple_regression(df)
+multi_model, x_test_multi, y_test_multi, y_pred_multi = run_q1_multiple_regression(df)
+
+# === SIMPLE REGRESSION OUTPUTS ===
+st.subheader("1. Simple Linear Regression (GDP → CO₂ Emissions)")
+
+# Metrics
+st.markdown("**Evaluation Metrics:**")
+q1_simple_metrics = pd.read_csv("outputs/tables/regression_summary_q1_simple.csv")
+st.dataframe(q1_simple_metrics, use_container_width=True)
+
+# Plot
+st.image("outputs/plots/q1_simple_regression.png", caption="Fitted Line: GDP vs CO₂")
+
+# Insight
+st.markdown("""
+**Insight:**  
+This model captures the general upward trend, but GDP alone doesn't explain all variation in emissions (as reflected in R² and RMSE).  
+""")
+
+# === MULTIPLE REGRESSION OUTPUTS ===
+st.subheader("2. Multiple Linear Regression (GDP + Population + PM2.5 → CO₂)")
+
+# Metrics
+st.markdown("**Evaluation Metrics:**")
+q1_multi_metrics = pd.read_csv("outputs/tables/regression_summary_q1_multiple.csv")
+st.dataframe(q1_multi_metrics, use_container_width=True)
+
+# Plot
+st.image("outputs/plots/q1_multiple_actual_vs_pred.png", caption="Actual vs Predicted CO₂ Emissions")
+
+# Insight
+st.markdown("""
+**Insight:**  
+Adding **population** and **air pollution (PM2.5)** improves model performance (higher R², lower RMSE).  
+This suggests that CO₂ emissions are more strongly influenced by **a combination of economic size and environmental/population pressures**, not GDP alone.
+""")
